@@ -31,7 +31,7 @@ def bfs():
 
 ## 2 Graph Representations
 ### 2.1 Adjacency Matrix
-![adj matrix](adjacency matrix.png){:w="450"}
+![adj matrix](Adjacency Matrix.png){:w="450"}
 
 DFS, BFS Runtime: $O(V^2)$
 
