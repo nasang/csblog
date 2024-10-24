@@ -66,3 +66,61 @@ Given a piece of code, we can express its runtime as a function $R(N)$, where $N
 - Often (but not always) we consider the worst case count
 - If operation takes constant time, then $R(N) \in \Theta(f(N))$
 - Can use $O$ as an alternative for $\Theta$. $O$ is used for upper bounds.
+
+## 14. Disjoint Sets
+```java
+// The Disjoint Sets Interface
+public interface DisjointSets {
+    /** Connects two items P and Q. */
+    void connect(int p, int q);
+    /** Checks to see if two items are connected. */
+    boolean isConnected(int p, int q);
+}
+```
+
+### 14.1  Representation
+![set_representation](14/set_representation.png)
+
+给每个节点分配一个 parent，用树的形式表示。
+
+- Find(x): 返回 x 的根节点，可以用 path compression 优化；（一般都优化）
+- Union(x, y): 将 x 和 y 所属的树合并为一棵，方法是让 Find(x) 成为 Find(y) 的孩子。可以用 rank 优化，即总是让元素个数少的树连接到元素个数多的树下面。（一般不用优化）
+
+两个优化都是为了让树的高度尽可能低。
+
+### 14.2 Find
+To find the root node of a given vertex.
+**Path Compression**: When looking for the root node, connect all the nodes you come across on the way to the final root node, making them children of the root node.
+
+Example: `find(13)`, `find(14)`
+
+![path_compression1](14/path_compression1.png){: w="450" h="350"}
+
+![path_compression2](14/path_compression2.png){: w="450" h="350"}
+
+![path_compression3](14/path_compression3.png){: w="450" h="350"}
+
+### 14.3 Union
+To connect two vertices.
+
+Example: `union(5, 2)`
+```
+find(5) -> 3
+find(2) -> 0
+make 3 a new child of 0
+```
+
+![basic_union](14/basic_union.png){: w="450" h="350"}
+
+![basic_union2](14/basic_union2.png){: w="450" h="350"}
+
+### 14.4 Union by Rank (**Weighted Quick Union**)
+Modify quick-union to avoid tall trees. Track tree size (**number** of elements), and always link root of **smaller** tree **to** **larger** tree.
+
+Example: `union(3, 8)`
+
+![wqu1](14/wqu1.png){: w="550" h="350"}
+
+![wqu2](14/wqu2.png){: w="550" h="350"}
+
+Why Weights Instead of Heights? Worst case performance is asymptotically the same. Both are $\Theta(\log(N))$. Resulting code is more complicated with no performance gain.
