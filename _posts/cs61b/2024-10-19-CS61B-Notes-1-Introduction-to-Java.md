@@ -1,5 +1,5 @@
 ---
-title: CS 61B Data Structures, Spring 2021 Notes
+title: CS 61B (Sp21) Notes 1, Introduction to Java
 categories: [UC Berkeley, CS61b Spring 2021]
 tags: [data structures]
 author: <na_id>
