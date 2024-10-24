@@ -413,3 +413,111 @@ BSTs have best case height $\Theta(\log N)$, and worst case height $\Theta(N)$. 
   - If nodes are too full, they split.
 - Resulting tree has perfect balance. Runtime for operations is $O(\log N)$.
 - B-trees are more complex, but they can efficiently handle any **insertion order**.
+
+## 18. Red Black Trees
+### 18.1 Tree Rotation
+#### 18.1.1 BSTs
+Suppose we have a BST with the numbers `1`, `2`, `3`. Five possible BSTs.
+- The specific BST you get is based on the insertion order.
+- More generally, for $N$ items, there are [Catalan(N)](https://en.wikipedia.org/wiki/Catalan_number) different BSTs.
+
+![BSTs](18/BSTs.png){:w="550" h="250"}
+
+Given any BST, it is possible to move to a different configuration using “rotation”.
+- In general, can move from any configuration to any other in 2n - 6 rotations (see [Rotation Distance, Triangulations, and Hyperbolic Geometry](https://www.cs.cmu.edu/~sleator/papers/rotation-distance.pdf) or [Amy Liu](https://medium.com/@liuamyj/its-triangles-all-the-way-down-part-1-17f932f4c438)).
+
+#### 18.1.2 Definition
+##### rotateLeft
+`rotateLeft(G)`: Suppose `x` is the right child of `G`, make `G` the new left child of `x`.
+
+![rotate_left_1](18/rotate_left_1.png){:w="550" h="400"}
+
+- Can think of as temporarily merging `G` and `P`, then sending `G` down and left.
+
+![rotate_left](18/rotate_left.png){:w="550" h="250"}
+
+##### rotateRight
+`rotateRight(P)`: Suppose `x` is the left child of `P`, make `P` the new right child of `x`.
+- Can think of as temporarily merging `G` and `P`, then sending `P` down and right.
+
+![rotate_right](18/rotate_right.png){:w="550" h="250"}
+
+#### 18.1.3 Tree Balancing
+Rotation:
+- Can shorten (or lengthen) a tree.
+- Preserves search tree property.
+
+![rotation](18/rotation.png){:w="600" h="250"}
+
+Rotation allows balancing of a BST in $O(N)$ moves.
+
+### 18.2 Left Leaning Red-Black Trees (LLRBs)
+#### 18.2.1 The 2-3 Tree Isometry
+2-3 trees always remain balanced, but they are very hard to implement. On the other hand, BSTs can be unbalanced, but are simple and intuitive. Is there a way to combine the best of two worlds? Why not create <u>a tree that is implemented using a BST, but is structurally identical to a 2-3 tree and thus stays balanced</u>?
+
+**Representing a 2-3 Tree as a BST**
+
+A 2-3 tree with only 2-nodes is trivial. BST is exactly the same.
+
+![2-nodes](18/2-nodes.png){:w="550" h="250"}
+
+**Dealing with 3-Nodes**
+
+- Possibility 1: Create dummy “glue” nodes.
+
+![dummy_glue_node](18/dummy_glue_node.png){:w="550" h="400"}
+_Result is inelegant. Wasted link. Code will be ugly._
+
+- Possibility 2: Create “glue” links with the smaller item **<u>off to the left</u>**.
+    - For convenience, we’ll mark glue links as “**<font color=red>red</font>**”.
+
+![glue_link](18/glue_link.png){:w="550" h="400"}
+_Idea is commonly used in practice (e.g. java.util.TreeSet)._
+
+A BST with left glue links that represents a 2-3 tree is often called a “Left Leaning Red Black Binary Search Tree” or LLRB.
+
+#### 18.2.2 LLRB Properties
+- Suppose we have a 2-3 tree of height H. The maximum height of the corresponding LLRB is
+  - H (black) + <font color=red>H + 1 (red)</font> = 2H + 1.
+
+![LLRB](18/LLRB.png){:w="550" h="400"}
+
+- No node has two red links [otherwise it’d be analogous to a 4 node, which are disallowed in 2-3 trees].
+- Every path from root to null has same number of **<u>black links</u>** [because 2-3 trees have the same number of links to every leaf]. LLRBs are therefore balanced.
+
+#### 18.2.3 Maintaining Isometry with Rotations
+When inserting into an LLRB tree, we <u>always insert the new node with a red link to its parent node</u>. This is because in a 2-3 tree, we are always inserting by adding to a leaf node, the color of the link we add should always be red.
+
+But sometimes, inserting red links at certain places might lead to cases where we break one of the invariants of LLRBs. Below are three such cases where we need to perform certain tasks address in order to maintain the LLRB tree's proper structure.
+
+**Case 1: Insertion on the Right**
+
+- If the left child is also a red link, go to case 3.
+- Otherwise, Rotate `E` left.
+
+![case1](18/case1.png){:w="550" h="300"}
+
+**Case 2: Double Insertion on the Left**
+
+- Rotate `Z` right. Then go to case 3.
+
+![case2](18/case2.png){:w="550" h="300"}
+
+**Case 3: Node has Two Red Children**
+
+- Flip the colors of all edges touching `B`.
+
+![case3](18/case3.png){:w="350" h="300"}
+
+**Cascading operations**
+
+It is possible that a rotation or flip operation will cause an additional violation that needs fixing.
+
+#### 18.2.4 Runtime and Implementation
+The runtime analysis for LLRBs is simple if you trust the 2-3 tree runtime.
+- LLRB tree has height $O(\log N)$.
+- `contains` is trivially $O(\log N)$.
+- `insert` is $O(\log N)$.
+  - $O(\log N)$ to add the new node.
+  - $O(\log N)$ rotation and color flip operations per insert.
+  
