@@ -278,3 +278,138 @@ Disjoint Sets, Map, Set, List.
 - BST Implementations:
   - Search and insert are straightforward (but insert is a little tricky).
   - Deletion is more challenging. Typical approach is “Hibbard deletion”.
+
+
+## 17. B-Trees (2-3, 2-3-4 Trees)
+### 17.1 Binary Search Trees
+#### 17.1.1 BST Height
+BST height is all four of these:
+- $O(N)$.
+- $\Theta(\log N)$ in the best case (“bushy”).
+- $\Theta(N)$ in the worst case (“spindly”).
+- $O(N^2)$.
+
+![BST](17/BST.png){: w="550" h="250"}
+_Trees range from best-case “bushy” to worst-case “spindly”_
+
+Difference is dramatic!
+
+<!-- ### 1.2 Big O vs. Worst Case Big Theta
+
+> Big O is **NOT** mathematically the same thing as “worst case”.
+- e.g. BST heights are $O(N^2)$, but are not quadratic in the worst case.
+- … but Big O often used as shorthand for “worst case”.
+{: .prompt-warning}
+
+> Big O is still a useful idea:
+- Allows us to make simple blanket statements, e.g. can just say “binary search is $O(\log N)$” instead of “binary search is $\Theta(\log N)$ in the worst case”.
+- Sometimes don’t know the exact runtime, so use $O$ to give an upper bound.
+- Easier to write proofs for Big O than Big Theta.
+{: .prompt-tip} -->
+
+#### 17.1.2 Worst Case Performance
+**Height and Depth**
+- The **depth** of a node is how far it is from the root, e.g. `depth(g)` = 2.
+- The **height** of a tree is the depth of its deepest leaf, e.g. `height(T)` = 4.
+
+![height_and_depth](17/height_and_depth.png){: w="550" h="250"}
+
+- The **average depth** of a tree is the average depth of a tree’s nodes.
+    - (0x1 + 1x2 + 2x4 + 3x6 + 4x1)/(1+2+4+6+1) = 2.35
+
+**Runtime**
+- The height of a tree determines <u>the worst case runtime to find a node</u>.
+  - Example: Worst case is `contains(s)`, requires 5 comparisons (height + 1).
+- The “average depth” determines <u>the average case runtime to find a node</u>.
+  - Example: Average case is 3.35 comparisons (average depth + 1).
+
+**Nice Property** 
+
+Random trees have $\Theta(\log N)$ average depth and height.
+- Good news: BSTs have great performance if we insert items randomly. Performance is $\Theta(\log N)$ per operation.
+- Bad News: We can’t always insert our items in a random order.
+
+
+### 17.2 B-Trees
+#### 17.2.1 Splitting Juicy Nodes
+
+##### 17.2.1.1 Avoiding Imbalance through Overstuffing
+> If we could simply avoid adding new leaves in our BST, the height would never increase.
+{: .prompt-tip}
+
+Instead of adding a new node upon insertion, we simply stack the new value into an existing leaf node at the appropriate location. Suppose we add `17`, `18`:
+
+![overstuffing](17/overstuffing.png){: w="600" h="500"}
+_Avoid new leaves by "overstuffing" the leaf nodes_
+
+##### 17.2.1.2 Moving Items Up
+> Height is balanced, but we have a new problem: Leaf nodes can get too juicy.
+{: .prompt-danger}
+
+We can set a limit $L$ on the number of items, say $L=3$. If any node has more than $L$ items, give an item to parent. Which one? Let’s say (arbitrarily) the left-middle.
+
+![move_up](17/move_up.png){: w="550" h="300"}
+_Moving 17 from a leaf node to its parent_
+
+However, this runs into the issue that our binary search property is no longer preserved: `16` is to the right of `17`. As such, we need a second fix: split the overstuffed node into ranges: $(-\infty,15)$, $(15, 17)$ and $(17, +\infty)$. Parent node now has three children.
+
+![split](17/split.png){: w="250" h="250"}
+_Splitting the children of an overstuffed node_
+
+##### 17.2.1.3 Chain Reaction Splitting
+
+Suppose we add `25`, `26`:
+
+![chain_1](17/chain_1.png){: w="600" h="500"}
+
+In the case when our root is above the limit, we are forced to increase the tree height.
+
+![root](17/root.png){: w="550" h="300"}
+
+#### 17.2.2 B-Tree Terminology
+> The origin of "B-tree" has never been explained by the authors. As we shall see, "balanced," "broad," or "bushy" might apply. Others suggest that the "B" stands for Boeing. Because of his contributions, however, it seems appropriate to think of B-trees as "Bayer"-trees. -- Douglas Corner (The Ubiquitous B-Tree)
+
+Observe that our new splitting-tree data structure has <u>perfect balance</u>. If we split the root, every node is pushed down by one level. If we split a leaf or internal node, the height does not change. There is never a change that results in imbalance.
+
+The real name for this data structure is a **B-Tree**. B-Trees with a limit of 3 items per node are also called 2-3-4 trees or 2-4 trees (a node can have 2, 3, or 4 children). Setting a limit of 2 items per node results in a 2-3 tree.
+
+B-Trees are used mostly in two specific contexts:
+- Small $L$ ($L=2$ or $L=3$):
+  - Used as a conceptually simple balanced search tree (as today).
+- $L$ is very large (say thousands).
+  - Used in practice for databases and filesystems (i.e. systems with very large records).
+
+#### 17.2.3 B-Tree Invariants
+Because of the way B-Trees are constructed, we get two nice invariants:
+- All leaves must be the same distance from the root.
+- A non-leaf node with $k$ items must have exactly $k+1$ children.
+
+#### 17.2.4 Worst Case Performance
+Let $L$ be the maximum items per node. Based on our invariants, the maximum height must be somewhere between $\log_{L+1}(N)$ and $\log_2(N)$.
+
+- Largest possible height is all non-leaf nodes have 1 item.
+
+![worst_case](17/worst_case.png){: w="250" h="250"}
+
+- Smallest possible height is all nodes have $L$ items.
+
+![best_case](17/best_case.png){: w="500" h="250"}
+
+Overall height is therefore $\Theta(\log N)$.
+
+**Runtime for `contains`**
+
+In the worst case, we have to examine up to $L$ items per node. We know that height is logarithmic, so the runtime of `contains` is bounded by $O(L \log N)$. Since $L$ is a constant, we can drop the multiplicative factor, resulting in a runtime of $O(\log N)$.
+
+**Runtime for `add`**
+
+A similar analysis can be done for `add`, except we have to consider the case in which we must split a leaf node. Since the height of the tree is $O(\log N)$, at worst, we do $\log N$ split operations (cascading from the leaf to the root). This simply adds an additive factor of $\log N$ to our runtime, which still results in an overall runtime of $O(\log N)$.
+
+### 17.3 Summary
+BSTs have best case height $\Theta(\log N)$, and worst case height $\Theta(N)$. B-Trees are a modification of the binary search tree that avoids $\Theta(N)$ worst case.
+- Nodes may contain between 1 and $L$ items.
+- `contains` works almost exactly like a normal BST.
+- `add` works by adding items to existing leaf nodes.
+  - If nodes are too full, they split.
+- Resulting tree has perfect balance. Runtime for operations is $O(\log N)$.
+- B-trees are more complex, but they can efficiently handle any **insertion order**.
