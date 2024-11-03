@@ -163,7 +163,7 @@ Now, if you stretch this structure vertically, you will see a tree. This specifi
 #### 16.2.2 BST Definition
 A **binary search tree** is a rooted binary tree with the BST property, i.e., For every node `X` in the tree: every key in the left subtree is less than `X`’s key, and every key in the right subtree is greater than `X`’s key.
 
-<!-- ```java
+```java
 private class BST<Key> {
     private Key key;
     private BST left;
@@ -179,11 +179,11 @@ private class BST<Key> {
         this.key = key;
     }
 }
-``` -->
+```
 
 #### 16.2.3 Contains
 To find a searchKey in a BST, we employ binary search, which is made easy due to the BST property.
-<!-- ```java
+```java
 static BST find(BST T, Key sk) {
    if (T == null)
       return null;
@@ -194,14 +194,14 @@ static BST find(BST T, Key sk) {
    else
       return find(T.right, sk);
 }
-``` -->
+```
 
 The runtime to complete a search on a “bushy” BST in the worst case is $\Theta(\log N)$, where $N$ is the number of nodes.
 
 #### 16.2.4 Insert
 We **always** insert at a leaf node.
 
-<!-- ```java
+```java
 static BST insert(BST T, Key ik) {
   if (T == null)
     return new BST(ik);
@@ -211,7 +211,7 @@ static BST insert(BST T, Key ik) {
     T.right = insert(T.right, ik);
   return T;
 }
-``` -->
+```
 
 #### 16.2.5 Deletion
 Deleting from a binary tree is a little bit more complicated because whenever we delete, we need to make sure we **reconstruct the tree and still maintain its BST property**. Let's break this problem down into three categories:
@@ -513,7 +513,7 @@ But sometimes, inserting red links at certain places might lead to cases where w
 
 It is possible that a rotation or flip operation will cause an additional violation that needs fixing.
 
-#### 18.2.4 Runtime and Implementation./÷••••••••´®®®‰‰‰‰‰‰"
+#### 18.2.4 Runtime and Implementation
 The runtime analysis for LLRBs is simple if you trust the 2-3 tree runtime.
 - LLRB tree has height $O(\log N)$.
 - `contains` is trivially $O(\log N)$.
@@ -533,3 +533,85 @@ Suppose we have: an increasing number of buckets $M$, and an increasing number o
 The `contains(x)` and `add(x)` have the worst case runtimes $\Theta(Q)$.
 
 As long as $M = \Theta(N)$, then $O(\frac{N}{M}) = O(1)$. **Resize** when load factor $\frac{N}{M}$ exceeds some constant. If items are spread out nicely, you get $\Theta(1)$ average runtime. One example strategy: When $\frac{N}{M}$ is ≥ 1.5, then double $M$. 
+
+## 20. Heaps and PQs
+###  20.1 Priority Queue
+(Min) Priority Queue: Allowing **tracking** and **removal** of the smallest item in a priority queue. Useful if you want to keep track of the "smallest", "largest", "best" etc. seen so far.
+```java
+public interface MinPQ<Item> {
+    /** Adds the item to the priority queue. */
+    public void add(Item x);
+    /** Returns the smallest item in the priority queue. */
+    public Item getSmallest();
+    /** Removes the smallest item from the priority queue. */
+    public Item removeSmallest();
+    /** Returns the size of the priority queue. */
+    public int size();
+}
+```
+
+### 20.2 Heaps
+#### 20.2.1 Heap Structure
+BSTs would work, but need to be kept bushy and duplicates are awkward.
+
+**Binary min-heap**: Binary tree that is **complete** and obeys **min-heap** property.
+- **Min-heap**: Every node is less than or equal to both of its children.
+- **Complete**: Missing items (if any) only at the bottom level, all nodes are as far left as possible.
+
+![heap](20/heap.png)
+
+#### 20.2.2 Add
+> Algorithm for `add(x)`: to maintain the **completeness**, the natural thought is to place `x` in the leftmost empty spot on the lowest level. However, this doesn't guarantee the **min-heap** property, so further adjustments are needed.
+{: .prompt-tip}
+
+**swim**: Continually compare `x` with its parent. If `x` is smaller, swap it with the parent. Repeat this process until `x` is in the right position.
+
+<img src="20/insert.png" alt="swim" style="zoom:100%;" />
+
+#### 20.2.3 Delete
+> Algorithm for `removeSmallest()`: to maintain the **completeness** of the structure, the intuitive approach is to swap the root node with the node at the end, then remove it. However, this doesn't guarantee the **min-heap** property, so further adjustments are needed.
+{: .prompt-tip}
+
+**sink**: Continually compare `x` with its left and right nodes. Swap x with the smaller of the two nodes. Repeat this process until `x` is in the right position.
+{: .prompt-info}
+
+<img src="20/remove.png" alt="sink" style="zoom:80%;" />
+
+#### 20.2.4 Heap Operations Summary
+- `getSmallest()` - return the item in the root node.
+- `add(x)` - place the new employee in the last position, and promote as high as possible.
+- `removeSmallest()` - assassinate the president (of the company), promote the rightmost person in the company to president. Then demote repeatedly, always taking the 'better' successor.
+
+### 20.3 Tree Representation
+How do we Represent a Tree in Java?
+
+<img src="20/tree.png" alt="tree" style="zoom:50%;" />
+
+#### 20.3.1 Approach 1a, 1b, and 1c
+Create mapping from node to children.
+
+![ap1digrams](20/ap1digrams.png){: w="550" h="250"}
+
+![ap1codes](20/ap1codes.png){: w="550" h="250"}
+
+#### 20.3.2 Approach 2
+Store keys in an array. Store parentIDs in an array.
+- Similar to what we did with disjointSets.
+
+<img src="20/ap2-1.png" alt="ap2-1" style="zoom: 40%;" />
+
+A more complex example：
+
+![ap2-2](20/ap2-2.png){: w="550" h="250"}
+
+#### 20.3.3 Approach 3
+Store keys in an array. Don’t store structure anywhere.
+
+In Approach2, we observe that when numbering a binary tree in the order of level traversal, if the tree has the property of being complete, there is a pattern between the parent and child node numbers: **the parent number** corresponding to **the node number** $k$ is $\frac{k-1}{2}$.
+
+Further, if we leave the 0th position empty, the following patterns emerge:
+- `leftChild(k)` $= 2k$
+- `rightChild(k)` $= 2k + 1$
+- `parent(k)` = $\frac{k}{2}$
+
+![ap3](20/ap3.png)
