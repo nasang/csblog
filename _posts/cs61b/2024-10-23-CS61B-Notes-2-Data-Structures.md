@@ -521,14 +521,26 @@ The runtime analysis for LLRBs is simple if you trust the 2-3 tree runtime.
   - $O(\log N)$ to add the new node.
   - $O(\log N)$ rotation and color flip operations per insert.
   
+
 ## 19. Hashing
-### 19.1 The Hash Table
+### 19.1 Motivation
+We’ve now seen several implementations of the Set (or Map) ADT.
+
+![set_map_implementations](19/set_map_implementations.png){:w="650" h="500"}
+
+Limits of **Search Tree** Based Sets:
+- require items to be **comparable**
+  - Could we somehow avoid the need for objects to be comparable?
+- have excellent **performance**, but could maybe be better
+  - Could we somehow do better than $\Theta(\log N)$?
+
+### 19.2 The Hash Table
 - Data is converted by a hash function into an integer representation called a **hash code**. 
 - The hash code is then **reduced** to a valid index, usually using the modulus operator, e.g. `2348762878 % 10 = 8`.
 
 ![hash_table](19/hash_table.png){:w="550" h="400"}
 
-### 19.2 Hash Table Runtime
+### 19.3 Hash Table Runtime
 Suppose we have: an increasing number of buckets $M$, and an increasing number of items $N$. Even if items are spread out evenly, lists are of length $Q = \frac{N}{M}$.
 The `contains(x)` and `add(x)` have the worst case runtimes $\Theta(Q)$.
 
