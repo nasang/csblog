@@ -768,7 +768,7 @@ def dfs(v):
             dfs(w)
 ```
 
-What we just did in `DepthFirstPaths` is called "**DFS Preorder**". i.e., **Action** (setting `edgeTo`) is before DFS calls to neighbors. One valid DFS preorder for this graph: 012543678, equivalent to the order of **dfs calls**.
+This is called "**DFS Preorder**". i.e., **Action** (setting `edgeTo`) is before DFS calls to neighbors. One valid DFS preorder for this graph: 012543678, equivalent to the order of **dfs calls**.
 
 ![s-t_connectivity](21/s-t_connectivity.png){:w="400"}
 
@@ -791,15 +791,9 @@ Just as there are many tree traversals, so too are there many graph traversals:
     - 0 1 24 53 68 7
 
 ### 21.4 Summary
-Graphs are a more general idea than a tree.
-- A tree is a graph where there are no cycles and every vertex is connected.
-- Key graph terms: Directed, Undirected, Cyclic, Acyclic, Path, Cycle.
+Graphs are a more general idea than a tree. A tree is a graph where there are no cycles and every vertex is connected.
+Graph problems vary widely in difficulty. Common tool for solving almost all graph problems is traversal. A traversal is an order in which you visit / act upon vertices.
+- Tree traversals: Preorder, inorder, postorder, level order.
+- Graph traversals: DFS preorder, DFS postorder, BFS.
 
-Graph problems vary widely in difficulty.
-- Common tool for solving almost all graph problems is traversal.
-- A traversal is an order in which you visit / act upon vertices.
-- Tree traversals:
-    - Preorder, inorder, postorder, level order.
-- Graph traversals:
-    - DFS preorder, DFS postorder, BFS.
-- By performing actions / setting instance variables during a graph (or tree) traversal, you can solve problems like s-t connectivity or path finding.
+By performing actions / setting instance variables during a graph (or tree) traversal, you can solve problems like s-t connectivity or path finding.
