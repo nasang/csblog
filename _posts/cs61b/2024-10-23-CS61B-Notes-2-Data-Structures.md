@@ -704,12 +704,6 @@ Given source vertex `s` and a target vertex `t`, is there a path between `s` and
 ![s-t_connectivity](21/s-t_connectivity.png){:w="400"}
 
 One possible recursive algorithm for `connected(s, t)`.
-```
-Does s == t?
-    If so, return true.
-    Otherwise, if connected(v, t) for any neighbor v of s, return true.
-Return false.
-```
 
 ```py
 def connected(s, t):
@@ -720,7 +714,6 @@ def connected(s, t):
             return True
     return False
 ```
-
 
 What is wrong with it? Can get caught in an infinite loop. Example:
 ```
@@ -735,13 +728,6 @@ How do we fix it?
 
 #### 21.3.2 Depth First Search
 Basic idea is same as before, but visit each vertex at most once. [[Demo](https://docs.google.com/presentation/d/1OHRI7Q_f8hlwjRJc8NPBUc1cMu5KhINH1xGXWDfs_dA/edit?usp=sharing)]
-```
-Mark s. ← Marking nodes prevents multiple visits
-Does s == t?
-    If so, return true.
-    Otherwise, if connected(v, t) for any unmarked neighbor v of s, return true.
-Return false.
-```
 
 ```py
 def connected(s, t):
@@ -768,31 +754,33 @@ def dfs(v):
             dfs(w)
 ```
 
-This is called "**DFS Preorder**". i.e., **Action** (setting `edgeTo`) is before DFS calls to neighbors. One valid DFS preorder for this graph: 012543678, equivalent to the order of **dfs calls**.
+This is called "**DFS Preorder**". i.e., **Action** (setting `edgeTo`) is before DFS calls to neighbors. One valid DFS preorder for this graph: `012543678`, equivalent to the order of **dfs calls**.
 
 ![s-t_connectivity](21/s-t_connectivity.png){:w="400"}
 
 We could also do actions in **DFS Postorder**. i.e., Action is after DFS calls to neighbors. Example:
+
+```py
+def dfs(s):
+  visited[s] = True
+  for w in neighbors_of(v):
+    if not visited[w]:
+      dfs(w)
+  print(s)
 ```
-dfs(s):
-    mark(s)
-    For each unmarked neighbor n of s:
-        dfs(n)
-    print(s)
-```
-Results for `dfs(0)` would be: 347685210, equivalent to the order of **dfs returns**.
+Results for `dfs(0)` would be: `347685210`, equivalent to the order of **dfs returns**.
 
 Just as there are many tree traversals, so too are there many graph traversals:
-- DFS Preorder: 012543678 (dfs calls).
-- DFS Postorder: 347685210 (dfs returns).
-- BFS order: Act in order of distance from `s`.
+- **DFS Preorder**: `012543678` (dfs calls).
+- **DFS Postorder**: `347685210` (dfs returns).
+- **BFS order**: Act in order of distance from `s`.
     - BFS stands for "breadth first search".
     - Analogous to "level order". Search is wide, not deep.
-    - 0 1 24 53 68 7
+    - `0 1 24 53 68 7`
 
 ### 21.4 Summary
 Graphs are a more general idea than a tree. A tree is a graph where there are no cycles and every vertex is connected.
-Graph problems vary widely in difficulty. Common tool for solving almost all graph problems is traversal. A traversal is an order in which you visit / act upon vertices.
+Graph problems vary widely in difficulty. Common tool for solving almost all graph problems is traversal. A **traversal** is an order in which you visit / act upon vertices.
 - Tree traversals: Preorder, inorder, postorder, level order.
 - Graph traversals: DFS preorder, DFS postorder, BFS.
 
