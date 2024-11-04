@@ -731,11 +731,11 @@ Basic idea is same as before, but visit each vertex at most once. [[Demo](https:
 
 ```py
 def connected(s, t):
-    visited[s] = True   # added
+    marked[s] = True   # added
     if s == t:
         return True
     for v in neighbors_of(s):
-        if not visited[v]  # added
+        if not marked[v]  # added
             if connected(v, t):
                 return True
     return False
@@ -747,9 +747,9 @@ Find a path from `s` to every other reachable vertex. [[Demo](https://docs.googl
 
 ```py
 def dfs(v):
-    visited[v] = True
-    for w in neighbors_of(v):
-        if not visited[w]:
+    marked[v] = True
+    for w in neighbors_of[v]:
+        if not marked[w]:
             edgeTo[w] = v
             dfs(w)
 ```
@@ -762,9 +762,9 @@ We could also do actions in **DFS Postorder**. i.e., Action is after DFS calls t
 
 ```py
 def dfs(s):
-  visited[s] = True
-  for w in neighbors_of(v):
-    if not visited[w]:
+  marked[s] = True
+  for w in neighbors_of[v]:
+    if not marked[w]:
       dfs(w)
   print(s)
 ```
@@ -785,3 +785,38 @@ Graph problems vary widely in difficulty. Common tool for solving almost all gra
 - Graph traversals: DFS preorder, DFS postorder, BFS.
 
 By performing actions / setting instance variables during a graph (or tree) traversal, you can solve problems like s-t connectivity or path finding.
+
+## 22. Graph Traversals and Implementations
+### 22.1 Breadth First Search
+#### 22.1.1 Shortest Paths Challenge
+Given the graph above, find the shortest path from `s` to all other vertices.
+
+BFS Answer [[Demo](https://docs.google.com/presentation/d/1JoYCelH4YE6IkSMq_LfTJMzJ00WxDj7rEa49gYmAtc4/edit?usp=sharing)]
+```py
+def bfs():
+    fringe = deque([s])
+    while fringe:
+        v = fringe.popleft()
+        for w in neighbors_of[v]:
+            if not marked[w]:
+                marked[w] = True
+                edgeTo[w] = v
+                # distTo[w] = distTo[v] + 1
+            fringe.append(w)
+```
+
+### 22.2 Graph Representations
+#### 22.2.1 Adjacency Matrix
+![adjacency_matrix](22/adjacency_matrix.png){:w="350"}
+
+DFS, BFS Runtime: $O(V^2)$
+
+#### 22.2.2 Edge Sets
+![edge_sets](22/edge_sets.png){:w="350"}
+
+#### 22.2.3 Adjacency Lists
+Common approach: Maintain array of lists indexed by vertex number. Most popular approach for representing graphs. Efficient when graphs are "sparse" (not too many edges).
+
+![adjacency_lists](22/adjacency_lists.png){:w="400"}
+
+DFS, BFS Runtime: $O(V+E)$
