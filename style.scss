@@ -1,5 +1,5 @@
----
----
+--- 
+--- 
 
 html {
   font-size: 100%;
@@ -30,6 +30,7 @@ a:hover {
 
 nav {
   float: right;
+
   a {
     margin-right: 20px;
     text-align: right;
@@ -43,6 +44,15 @@ nav {
 
 img {
   max-width: 100%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+img+em,
+a+em {
+  display: block;
+  text-align: center;
 }
 
 @import "highlights";
