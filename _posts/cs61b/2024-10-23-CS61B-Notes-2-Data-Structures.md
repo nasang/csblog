@@ -4,6 +4,7 @@ categories: [UC Berkeley, CS61b Spring 2021]
 tags: [data structures]
 author: <na_id>
 math: true
+toc: true
 media_subpath: /assets/img/cs61b/
 ---
 
@@ -27,8 +28,8 @@ Algorithms which scale well (e.g. look like lines) have better asymptotic runtim
 2. Pick a representative operation (a.k.a. the cost model).
 3. Ignore lower order terms.
 4. Ignore multiplicative constants.
-![simlipy](13/simplify.png){: w="500"}
 
+![simlipy](13/simplify.png){: w="500"}
 
 #### 13.1.3 Computing Worst Case Order of Growth (Simplified Approach)
 - Choose a representative operation to count (a.k.a. cost model).

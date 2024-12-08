@@ -4,6 +4,7 @@ categories: [UC Berkeley, CS61b Spring 2021]
 tags: [data structures, algorithms]
 author: <na_id>
 math: true
+toc: true
 media_subpath: /assets/img/cs61b/
 ---
 

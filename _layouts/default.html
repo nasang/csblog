@@ -20,6 +20,16 @@
     </header>
   </div>
 
+  <div>
+    {% if page.toc %}
+    <aside class>
+      <nav class="toc">
+        {% include toc.html sanitize=true html=content h_min=2 h_max=3 class="toc-menu" %}
+      </nav>
+    </aside>
+    {% endif %}
+  </div>
+
   <div id="main" role="main" class="container">
     {{ content }}
   </div>

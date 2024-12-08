@@ -7,7 +7,7 @@ html {
 
 .container {
   margin: auto;
-  max-width: 740px;
+  max-width: 840px;
   padding: 12px;
   width: 100%;
 }
@@ -53,6 +53,27 @@ img+em,
 a+em {
   display: block;
   text-align: center;
+}
+
+.toc {
+  max-width: fit-content;
+  position: fixed;
+  right: 1;
+  top: 0;
+}
+
+.toc-menu {
+  border: 1px solid #1772d0;
+  background-color: #fff;
+  font-weight: lighter;
+  a {
+    text-decoration: none;
+  }
+  a:focus,
+a:hover {
+  color: #1772d0;
+  text-decoration: none;
+}
 }
 
 @import "highlights";
