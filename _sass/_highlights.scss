@@ -1,15 +1,4 @@
 @use "sass:color";
-highlight {
-  background-color: #ffffff;
-  padding: 5px 10px;
-  margin: 20px 0;
-}
-
-.highlight pre {
-  word-break: break-all;
-  word-wrap: break-word;
-}
-
 
 code {
   font-family: Menlo, Monaco, 'Courier New', monospace;
@@ -33,7 +22,8 @@ code {
   }
 
   .highlight {
-    background: #ffffff;
+    background: #fff;
+    border: 1px solid #030303;
   }
 
   .highlight .c {

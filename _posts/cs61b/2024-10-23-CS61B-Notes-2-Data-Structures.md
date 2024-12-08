@@ -132,10 +132,9 @@ This lecture is about the basic ideas behind the `TreeSet` and `TreeMap`.
 ### 16.2 Binary Search Trees
 
 #### 16.2.1 Derivation
-In an earlier lecture, we implemented a set based on unordered arrays. For the **ordered linked list** set implementation below,  `contains` and `add` take worst case linear time, i.e. $\Theta(N)$. Fundamental Problem: Slow search, even though it’s in order.
+For the **ordered linked list** set implementation below, `contains` and `add` take worst case linear time, i.e. $\Theta(N)$. Fundamental Problem: Slow search, even though it’s in order.
 
 ![ordered_linked_list](16/ordered_linked_list.png){: w="550"}
-
 
 In **binary search**, we know the list is sorted, so we can use this information to narrow our search. <u>Applying binary search to a linked list</u> might seem challenging at first. We need to traverse all the way to the middle to check the element there, which would take linear time.
 
@@ -154,19 +153,19 @@ A **binary search tree** is a rooted binary tree with the BST property, i.e., Fo
 
 ```java
 private class BST<Key> {
-    private Key key;
-    private BST left;
-    private BST right;
+  private Key key;
+  private BST left;
+  private BST right;
 
-    public BST(Key key, BST left, BST Right) {
-        this.key = key;
-        this.left = left;
-        this.right = right;
-    }
+  public BST(Key key, BST left, BST Right) {
+    this.key = key;
+    this.left = left;
+    this.right = right;
+  }
 
-    public BST(Key key) {
-        this.key = key;
-    }
+  public BST(Key key) {
+    this.key = key;
+  }
 }
 ```
 
@@ -174,14 +173,14 @@ private class BST<Key> {
 To find a searchKey in a BST, we employ binary search, which is made easy due to the BST property.
 ```java
 static BST find(BST T, Key sk) {
-   if (T == null)
-      return null;
-   if (sk.equals(T.key))
-      return T;
-   else if (sk < T.key)
-      return find(T.left, sk);
-   else
-      return find(T.right, sk);
+  if (T == null)
+    return null;
+  if (sk.equals(T.key))
+    return T;
+  else if (sk < T.key)
+    return find(T.left, sk);
+  else
+    return find(T.right, sk);
 }
 ```
 
@@ -218,15 +217,6 @@ Example: **delete("flat")**
 
 ![one child](16/del_1_child.png){: w="300"}
 
-<!-- Goal:
-- Maintain BST property.
-- `flat`’s child definitely larger than `dog`.
-  - Safe to just move that child into `flat`’s spot.
-
-Thus: Move `flat`’s parent’s pointer to `flat`’s child.
-- `flat` will be garbage collected (along with its instance variables). -->
-
-
 ##### Case 3: Key with two Children (Hibbard)
 If the node has two children, the process becomes a little more complicated because we can't just assign one of the children to be the new root. This might break the BST property.
 Instead, we <u>choose a new node to replace the deleted one</u>.
@@ -235,7 +225,6 @@ We know that the new node must:
 - be < than everything right subtree.
 
 Example: **delete("dog")**
-
 
 ![two children](16/del_2_children.png){: w="300"}
 
@@ -258,15 +247,15 @@ Note: No efficient way to look up by value.
 - Example: Cannot find all the keys with value = 1 without iterating over **ALL** nodes. This is fine.
 
 ### 16.4 Summary
-- Abstract data types (ADTs) are defined in terms of operations, not implementation.Several useful ADTs:
-Disjoint Sets, Map, Set, List.
-- Java provides Map, Set, List interfaces, along with several implementations.
+- Abstract data types (ADTs) are defined in terms of operations, not implementation. 
+  - Several useful ADTs: Disjoint Sets, Map, Set, List.
+- Java provides `Map`, `Set`, `List` interfaces, along with several implementations.
 - We’ve seen two ways to implement a Set (or Map):
   - ArraySet: $\Theta(N)$ operations in the worst case.
   - BST: $\Theta(\log N)$ operations if tree is balanced.
 - BST Implementations:
   - Search and insert are straightforward (but insert is a little tricky).
-  - Deletion is more challenging. Typical approach is “Hibbard deletion”.
+  - Deletion is more challenging. Typical approach is "Hibbard deletion".
 
 
 ## 17. B-Trees (2-3, 2-3-4 Trees)
