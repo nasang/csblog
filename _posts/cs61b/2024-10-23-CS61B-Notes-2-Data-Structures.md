@@ -64,7 +64,7 @@ Given a piece of code, we can express its runtime as a function $R(N)$, where $N
 - Can use $O$ as an alternative for $\Theta$. $O$ is used for upper bounds.
 
 ## 14. Disjoint Sets
-### 14.1 Dynamic Connectivity and the Disjoint Sets Problem
+### 14.1 Dynamic Connectivity Problem
 Deriving the "Disjoint Sets" data structure for solving the "Dynamic Connectivity" problem.
 The Disjoint Sets data structure has two operations: 
 - `connect(x, y)`: Connects `x` and `y`. 
