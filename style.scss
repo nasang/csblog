@@ -66,14 +66,16 @@ a+em {
   border: 1px solid #1772d0;
   background-color: #fff;
   font-weight: lighter;
+
   a {
     text-decoration: none;
   }
+
   a:focus,
-a:hover {
-  color: #1772d0;
-  text-decoration: none;
-}
+  a:hover {
+    color: #1772d0;
+    text-decoration: none;
+  }
 }
 
 @import "highlights";
