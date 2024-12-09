@@ -134,7 +134,7 @@ public class DataIndexedCharMap<V> {
 #### Special Case 2: String Keyed Map
 Suppose we know that our keys are always strings. We can use a special data structure known as a **Trie**. The basic idea: store **each letter** of the string as a node in a tree.
 
-**Trie**: Short for Re**trie**val Tree. Inventor Edward Fredkin suggested it should be pronounced "tree", but almost everyone pronounces it like "try".
+**Trie**: Short for Re**trie**val Tree. Inventor _Edward Fredkin_ suggested it should be pronounced "tree", but almost everyone pronounces it like "try".
 
 ![trie](26/trie_map.png){:w="500"}
 _Use Trie to implement Map_
@@ -143,22 +143,40 @@ _Use Trie to implement Map_
 _different implementations of set_
 
 ### 26.2 Trie Implementation
-#### 26.2.1 Implementation
+#### 26.2.1 Basic Trie Implementation
+The first approach might look something like the code below. Each node stores a letter (`ch`), a map from `ch` to all child nodes (`next`), and a color (`isKey`).
+
+```java
+public class TrieSet {
+    private static final int R = 128; // ASCII
+    private Node root;	// root of trie
+    
+    private static class Node {
+        // private char ch; removed
+        private boolean isKey;
+        // Since we know our keys are characters, can use a DataIndexedCharMap.   
+        private DataIndexedCharMap<Node> next;
+        private Node( /*char c, removed*/ boolean b, int R) {
+            // ch = c; removed
+            isKey = b;
+            next = new DataIndexedCharMap<>(R);
+        }
+    }
+}
+```
+Since we use a `DataIndexedCharMap` to track children, every node has `R` links, mostly `null`. Observation: The letter stored inside each node is actually redundant. Can remove from the representation and things will work fine.
+
+![basic_impl](26/basic_impl.png){:w="550"}
+
+Assuming the length of the key is $L$, the runtime of `add` is $\Theta(L)$ and that of `contain` is $O(L)$.
+
+#### 26.2.2 Alternate Child Tracking Strategies
+Using a `DataIndexedCharMap` is very memory hungry. Every node has to store `R` links, most of which are `null`. Using BST or Hash Table will be slightly slower, but more memory efficient.
+
 ![implementation](26/implementation.png){:w="750"}
 _The Hash-Table Based Trie (mid) and The BST-Based Trie (right)_
 
-```py
-class Node:
-    def __init__(self, isKey):
-        self.isKey = isKey
-        self.next = dict()
-
-class TrieSet:
-    def __init__(self):
-        self.root = Node(isKey=False)
-```
-
-#### 26.2.2 Performance
+#### 26.2.3 Performance
 Using a BST or a Hash Table to store links to children will usually use less memory.
 - DataIndexedCharMap: 128 links per node.
 - BST: $C$ links per node, where $C$ is the number of children.
@@ -177,47 +195,92 @@ Theoretical asymptotic speed improvement is nice. But the main appeal of tries i
 - Finding all keys that match a given prefix: `keysWithPrefix("sa")`
 - Finding longest prefix of: `longestPrefixOf("sample")`
 
-#### 26.3.1 Algorithms
-#### 3.1.1 Collecting Trie Keys
-```py
-def collect():
-    res = []
-    for c in trie.root.next.keys():
-        colHelp("c", res, trie.root.next[c])
-    return res
+#### 26.3.1 Collecting Trie Keys
+Give an algorithm for collecting all the keys in a Trie.
+```java
+public class TrieSet {
+    private static final int R = 128;
+    private Node root;
 
-def colHelp(s:str, res:list[str], n:Node):
-    if n.isKey:
-        res.add(s).
-    for c in n.next.keys():
-        colHelp(s + c, res, n.next[c])
+    private static class Node {
+        private boolean isKey;
+        private Map<Character, Node> next;
+
+        private Node(boolean b, int R) {
+            isKey = b;
+            next = new HashMap<>(R);
+        }
+    }
+
+    public List<String> collect() {
+        List<String> x = new ArrayList<>();
+        for (Character c: root.next.keySet()) {
+            colHelp("c", x, root.next.get(c));
+        }
+        return x;
+    }
+
+    private void colHelp(String s, List<String> x, Node n) {
+        if (n.isKey) {
+            x.add(s);
+        }
+        for (Character c: n.next.keySet()) {
+            colHelp(s + c, x, n.next.get(c));
+        }
+    }
+}
 ```
 
-#### 3.1.2 keysWithPrefix
-```py
-def keysWithPrefix(prefix:str)
-    # find the note a corresponding to the prefix
-    for c in a.next.keys():
-        colHelp(prefix+c, x, a.next[c])
+#### 26.3.2 keysWithPrefix
+Give an algorithm for `keysWithPrefix`.
+```java
+public class TrieSet {
+    //...
+    public List<String> keysWithPrefix(String prefix) {
+        Node n = root;
+        for (int i = 0; i < prefix.length(); i++) {
+            for (Character c: n.next.keySet()) {
+                if (Character.valueOf(c) == prefix.charAt(i)) {
+                    n = n.next.get(c);
+                }
+            }
+        }
+        List<String> x = new ArrayList<>();
+        for (Character c: n.next.keySet()) {
+            colHelp(prefix + c, x, n.next.get(c));
+        }
+        return x;
+    }
+
+    private void colHelp(String s, List<String> x, Node n) {
+        if (n.isKey) {
+            x.add(s);
+        }
+        for (Character c: n.next.keySet()) {
+            colHelp(s + c, x, n.next.get(c));
+        }
+    }
+}
 ```
 
 ### 26.4. Autocomplete
 #### 26.4.1 The Autocomplete Problem
-![google_search](26/google_search.png){:w="300"}
+Example, when I type "how are" into Google, I get 10 results, shown to the below.
 
-One way to do this is to create a Trie based map from strings to values
+One way to do this is to create a **Trie based map** from strings to values
 - Value represents how important Google thinks that string is.
 - Can store billions of strings efficiently since they share nodes.
 - When a user types in a string "hello", we:
-    - Call keysWithPrefix("hello").
+    - Call `keysWithPrefix("hello")`.
     - Return the 10 strings with the highest value.
 
-
-![google_search_2](26/google_search_2.png){:w="300"}
+![google_search](26/google_search.png){:w="300"}
 
 The approach above has one major flaw. If we enter a short string, the number of keys with the appropriate prefix will be too big.
 - We are collecting billions of results only to keep 10.
 - This is extremely inefficient.
+
+![google_search_2](26/google_search_2.png){:w="300"}
 
 #### 26.4.2 A More Efficient Autocomplete
 ![efficient_autocomplete](26/efficient_autocomplete.png){:w="300"}
@@ -244,6 +307,6 @@ When your key is a string, you can use a Trie:
     - Bushy BST.
     - Hash Table.
 - All three choices are fine, though hash table is probably the most natural.
-- Supports special string operations like longestPrefixOf and keysWithPrefix.
-    - keysWithPrefix is the heart of important technology like autocomplete.
+- Supports special string operations like `longestPrefixOf` and `keysWithPrefix`.
+    - `keysWithPrefix` is the heart of important technology like autocomplete.
     - Optimal implementation of Autocomplete involves use of a priority queue.
